@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/rh-conge-front",
+  "outputDirectory": "dist/rh-conge-front/browser",
   "rewrites": [
     {
       "source": "/:path((?!.*\\.).*)",
