@@ -1,0 +1,181 @@
+package com.rh.conge.service;
+
+import com.rh.conge.dto.PointageDTO;
+import com.rh.conge.entity.Pointage;
+import com.rh.conge.entity.Utilisateur;
+import com.rh.conge.entity.TypePresence;
+import com.rh.conge.repository.PointageRepository;
+import com.rh.conge.repository.UtilisateurRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class PointageService {
+
+    @Autowired
+    private PointageRepository pointageRepository;
+
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
+
+    private PointageDTO convertToDTO(Pointage pointage) {
+        PointageDTO dto = new PointageDTO();
+        dto.setId(pointage.getId());
+        dto.setUtilisateurId(pointage.getUtilisateur().getId());
+        dto.setUtilisateurNom(pointage.getUtilisateur().getNom());
+        dto.setUtilisateurPrenom(pointage.getUtilisateur().getPrenom());
+        dto.setDatePointage(pointage.getDatePointage());
+        dto.setHeureArrivee(pointage.getHeureArrivee());
+        dto.setHeureDepart(pointage.getHeureDepart());
+        dto.setType(pointage.getType());
+        dto.setJustification(pointage.getJustification());
+        dto.setPresent(pointage.isPresent());
+        dto.setHeuresTravaillees(pointage.getHeuresTravaillees());
+        dto.setHeuresSupplementaires(pointage.getHeuresSupplementaires());
+        dto.setEstJustifie(pointage.isEstJustifie());
+        return dto;
+    }
+    // ✅ AJOUTER CETTE MÉTHODE DANS PointageService.java
+
+public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, LocalDate date) {
+    Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+        .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+    // Vérifier si déjà pointé ce jour-là
+    var existing = pointageRepository.findByUtilisateurIdAndDate(utilisateurId, date);
+    if (existing.isPresent()) {
+        throw new RuntimeException("Vous avez déjà pointé le " + date);
+    }
+
+    Pointage pointage = new Pointage();
+    pointage.setUtilisateur(utilisateur);
+    pointage.setDatePointage(date);
+    pointage.setHeureArrivee(heure != null ? heure : LocalTime.now());
+    pointage.setType(TypePresence.PRESENTIEL);
+    pointage.setPresent(true);
+
+    Pointage saved = pointageRepository.save(pointage);
+    return convertToDTO(saved);
+}
+
+    public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure) {
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        LocalDate aujourdhui = LocalDate.now();
+        
+        // Vérifier si déjà pointé aujourd'hui
+        var existing = pointageRepository.findByUtilisateurIdAndDate(utilisateurId, aujourdhui);
+        if (existing.isPresent()) {
+            throw new RuntimeException("Vous avez déjà pointé aujourd'hui");
+        }
+
+        Pointage pointage = new Pointage();
+        pointage.setUtilisateur(utilisateur);
+        pointage.setDatePointage(aujourdhui);
+        pointage.setHeureArrivee(heure != null ? heure : LocalTime.now());
+        pointage.setType(TypePresence.PRESENTIEL);
+        pointage.setPresent(true);
+
+        Pointage saved = pointageRepository.save(pointage);
+        return convertToDTO(saved);
+    }
+
+    public PointageDTO enregistrerDepart(Long utilisateurId, LocalTime heure) {
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        LocalDate aujourdhui = LocalDate.now();
+        
+        Pointage pointage = pointageRepository
+            .findByUtilisateurIdAndDate(utilisateurId, aujourdhui)
+            .orElseThrow(() -> new RuntimeException("Aucun pointage trouvé pour aujourd'hui"));
+
+        if (pointage.getHeureDepart() != null) {
+            throw new RuntimeException("Vous avez déjà enregistré votre départ");
+        }
+
+        LocalTime heureDepart = heure != null ? heure : LocalTime.now();
+        pointage.setHeureDepart(heureDepart);
+        
+        // Calculer les heures travaillées
+        Duration duration = Duration.between(
+            pointage.getHeureArrivee(), 
+            heureDepart
+        );
+        double heures = duration.toMinutes() / 60.0;
+        pointage.setHeuresTravaillees(heures);
+        
+        // Calculer les heures supplémentaires (> 8h)
+        if (heures > 8) {
+            pointage.setHeuresSupplementaires(heures - 8);
+        }
+
+        Pointage saved = pointageRepository.save(pointage);
+        return convertToDTO(saved);
+    }
+
+    public List<PointageDTO> getPointagesByUser(Long utilisateurId) {
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        
+        return pointageRepository.findByUtilisateur(utilisateur)
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<PointageDTO> getPointagesByUserAndDateRange(
+        Long utilisateurId, 
+        LocalDate debut, 
+        LocalDate fin
+    ) {
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        
+        return pointageRepository.findByUtilisateurAndDatePointageBetween(utilisateur, debut, fin)
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+
+    public PointageDTO updateTypePresence(Long pointageId, TypePresence type, String justification) {
+        Pointage pointage = pointageRepository.findById(pointageId)
+            .orElseThrow(() -> new RuntimeException("Pointage non trouvé"));
+        
+        pointage.setType(type);
+        pointage.setJustification(justification);
+        pointage.setEstJustifie(true);
+        
+        Pointage saved = pointageRepository.save(pointage);
+        return convertToDTO(saved);
+    }
+
+    public List<PointageDTO> getPointagesByDate(LocalDate date) {
+        return pointageRepository.findByDatePointage(date)
+            .stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+
+    public double getHeuresTravailleesMois(Long utilisateurId, int mois, int annee) {
+        LocalDate debut = LocalDate.of(annee, mois, 1);
+        LocalDate fin = debut.withDayOfMonth(debut.lengthOfMonth());
+        
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        
+        List<Pointage> pointages = pointageRepository.findByUtilisateurAndDatePointageBetween(
+            utilisateur, debut, fin
+        );
+        
+        return pointages.stream()
+            .mapToDouble(Pointage::getHeuresTravaillees)
+            .sum();
+    }
+}
