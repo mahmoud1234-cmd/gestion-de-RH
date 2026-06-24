@@ -4,7 +4,6 @@ node_modules
 README.md
 .env.local
 .env.*.local
-src
 *.spec.ts
 karma.conf.js
 tsconfig.spec.json
