@@ -702,16 +702,13 @@ export class EmployeeDashboardComponent implements OnInit {
       this.loadPointages();
       this.loadDemandes();
 
-      // Afficher immédiatement le taux fixe selon le rôle
+      // Afficher immédiatement le taux fixe selon le rôle (valeur par défaut)
       const tauxParRole = this.user.role === 'MANAGER' ? 18.50 : 12.50;
       this.tauxHoraire = tauxParRole;
 
-      // Taux horaire fixe selon le rôle (idem constantes backend)
-      // On essaie d'abord de le récupérer via l'API, sinon on utilise la valeur fixe
+      // Essayer de récupérer le taux réel depuis l'API (sinon la valeur fixe reste)
       const mois = new Date().getMonth() + 1;
       const annee = new Date().getFullYear();
-
-      const tauxParRole = this.user!.role === 'MANAGER' ? 18.50 : 12.50;
 
       this.salaireService.getSalaireByMonth(this.user!.id!, mois, annee).subscribe({
         next: (salaire: Salaire) => {
