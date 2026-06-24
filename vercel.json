@@ -1,3 +1,11 @@
 {
-  "rootDirectory": "rh-conge-front"
+  "installCommand": "cd rh-conge-front && npm install --legacy-peer-deps",
+  "buildCommand": "cd rh-conge-front && npm run build",
+  "outputDirectory": "rh-conge-front/dist/rh-conge-front/browser",
+  "rewrites": [
+    {
+      "source": "/:path((?!.*\\.).*)",
+      "destination": "/index.html"
+    }
+  ]
 }
