@@ -1,9 +1,11 @@
 import { environment } from '../../environments/environment';
 
+const BASE_URL = environment.backendUrl || 'https://gestion-de-rh-production.up.railway.app/api';
+
 export const API_CONFIG = {
-  AUTH: `${environment.backendUrl}/auth`,
-  CONGES: `${environment.backendUrl}/conges`,
-  POINTAGE: `${environment.backendUrl}/pointage`,
-  SALAIRE: `${environment.backendUrl}/salaire`,
-  UTILISATEURS: `${environment.backendUrl}/utilisateurs`
+  AUTH: `${BASE_URL}/auth`,
+  CONGES: `${BASE_URL}/conges`,
+  POINTAGE: `${BASE_URL}/pointage`,
+  SALAIRE: `${BASE_URL}/salaire`,
+  UTILISATEURS: `${BASE_URL}/utilisateurs`
 };
