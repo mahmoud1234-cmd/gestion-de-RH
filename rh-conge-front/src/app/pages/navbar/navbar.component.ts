@@ -12,8 +12,8 @@ import { CongeService } from '../../services/conge.service';
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
       <div class="container-fluid">
         <!-- Brand -->
-        <a class="navbar-brand" routerLink="/">
-          <i class="fas fa-calendar-check me-2"></i>
+        <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+          <img src="images.png" alt="Logo RH Gestion" class="navbar-logo" />
           <span class="fw-bold">RH Gestion</span>
         </a>
 
@@ -215,6 +215,14 @@ import { CongeService } from '../../services/conge.service';
 
       .navbar-custom .navbar-brand:hover {
         color: rgba(255, 255, 255, 0.8);
+      }
+
+      .navbar-logo {
+        height: 36px;
+        width: auto;
+        object-fit: contain;
+        border-radius: 6px;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
       }
 
       .navbar-custom .nav-link {

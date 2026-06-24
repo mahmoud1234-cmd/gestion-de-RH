@@ -23,17 +23,14 @@ declare var grecaptcha: any;
         <div class="col-md-6 col-lg-4">
           <div class="card fade-in-up p-4">
             <div class="text-center mb-4">
-              <div
-                class="d-inline-block bg-primary bg-opacity-10 p-3 rounded-circle mb-3"
-              >
-                <i
-                  class="fas fa-calendar-check text-primary"
-                  style="font-size: 2.5rem;"
-                ></i>
+              <div class="mb-3">
+                <img
+                  src="images.png"
+                  alt="Logo ST2I"
+                  class="login-logo"
+                />
               </div>
-              <h3 class="fw-bold" style="color: #2d3748;">
-                Gestion des Congés
-              </h3>
+              <h3 class="fw-bold" style="color: #2d3748;">ST2I</h3>
               <p class="text-muted">Connectez-vous à votre compte</p>
             </div>
 
@@ -135,6 +132,13 @@ declare var grecaptcha: any;
       .g-recaptcha {
         display: flex;
         justify-content: center;
+      }
+      .login-logo {
+        height: 90px;
+        width: auto;
+        object-fit: contain;
+        border-radius: 12px;
+        filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.3));
       }
     `,
   ],
