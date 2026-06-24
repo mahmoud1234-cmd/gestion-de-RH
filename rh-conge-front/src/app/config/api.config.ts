@@ -1,6 +1,4 @@
-import { environment } from '../../environments/environment';
-
-const BASE_URL = environment.backendUrl || 'https://gestion-de-rh-production.up.railway.app/api';
+const BASE_URL = 'https://gestion-de-rh-production.up.railway.app/api';
 
 export const API_CONFIG = {
   AUTH: `${BASE_URL}/auth`,
