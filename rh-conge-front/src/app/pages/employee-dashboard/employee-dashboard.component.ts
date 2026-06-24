@@ -94,7 +94,7 @@ interface UserGrade {
                  [ngClass]="{'perf-pending': hasDemandesEnAttente()}"></div>
           </div>
           <div class="stat-card-mini animate__animated animate__fadeInUp" style="animation-delay: 0.8s">
-            <div class="stat-value">{{ tauxHoraire ? (tauxHoraire | number: '1.2-2') + ' €/h' : '-' }}</div>
+            <div class="stat-value">{{ tauxHoraire != null ? (tauxHoraire | number: '1.2-2') + ' €/h' : '-' }}</div>
             <div class="stat-label">Coût / heure</div>
           </div>
         </div>
@@ -672,7 +672,7 @@ export class EmployeeDashboardComponent implements OnInit {
   joursTravailles = 0;
   tauxPresence = 0;
   now = new Date();
-  tauxHoraire?: number;
+  tauxHoraire: number | undefined = undefined;
 
   gradeInfo: UserGrade = {
     nom: 'Junior',
@@ -702,7 +702,7 @@ export class EmployeeDashboardComponent implements OnInit {
       this.loadPointages();
       this.loadDemandes();
 
-      // Charger le salaire du mois courant pour afficher le taux horaire
+      // Charger le taux horaire : récupérer le salaire du mois, ou le calculer s'il n'existe pas encore
       const mois = new Date().getMonth() + 1;
       const annee = new Date().getFullYear();
       this.salaireService.getSalaireByMonth(this.user!.id!, mois, annee).subscribe({
@@ -710,7 +710,15 @@ export class EmployeeDashboardComponent implements OnInit {
           this.tauxHoraire = salaire?.tauxHoraire || 0;
         },
         error: () => {
-          this.tauxHoraire = 0;
+          // Le salaire n'existe pas encore pour ce mois → on le calcule automatiquement
+          this.salaireService.calculerSalaire(this.user!.id!, mois, annee).subscribe({
+            next: (salaire: Salaire) => {
+              this.tauxHoraire = salaire?.tauxHoraire || 0;
+            },
+            error: () => {
+              this.tauxHoraire = 0;
+            },
+          });
         },
       });
     }
