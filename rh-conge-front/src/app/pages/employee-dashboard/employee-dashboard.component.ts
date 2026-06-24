@@ -702,21 +702,30 @@ export class EmployeeDashboardComponent implements OnInit {
       this.loadPointages();
       this.loadDemandes();
 
-      // Charger le taux horaire : récupérer le salaire du mois, ou le calculer s'il n'existe pas encore
+      // Afficher immédiatement le taux fixe selon le rôle
+      const tauxParRole = this.user.role === 'MANAGER' ? 18.50 : 12.50;
+      this.tauxHoraire = tauxParRole;
+
+      // Taux horaire fixe selon le rôle (idem constantes backend)
+      // On essaie d'abord de le récupérer via l'API, sinon on utilise la valeur fixe
       const mois = new Date().getMonth() + 1;
       const annee = new Date().getFullYear();
+
+      const tauxParRole = this.user!.role === 'MANAGER' ? 18.50 : 12.50;
+
       this.salaireService.getSalaireByMonth(this.user!.id!, mois, annee).subscribe({
         next: (salaire: Salaire) => {
-          this.tauxHoraire = salaire?.tauxHoraire || 0;
+          this.tauxHoraire = salaire?.tauxHoraire ?? tauxParRole;
         },
         error: () => {
-          // Le salaire n'existe pas encore pour ce mois → on le calcule automatiquement
+          // Salaire pas encore calculé → on le calcule en arrière-plan
           this.salaireService.calculerSalaire(this.user!.id!, mois, annee).subscribe({
             next: (salaire: Salaire) => {
-              this.tauxHoraire = salaire?.tauxHoraire || 0;
+              this.tauxHoraire = salaire?.tauxHoraire ?? tauxParRole;
             },
             error: () => {
-              this.tauxHoraire = 0;
+              // API indisponible → valeur fixe selon le rôle
+              this.tauxHoraire = tauxParRole;
             },
           });
         },
