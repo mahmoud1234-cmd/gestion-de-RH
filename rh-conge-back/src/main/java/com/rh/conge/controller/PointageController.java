@@ -24,7 +24,8 @@ public class PointageController {
     public ResponseEntity<PointageDTO> enregistrerArrivee(
         @PathVariable Long utilisateurId,
         @RequestParam(required = false) @DateTimeFormat(pattern = "HH:mm") LocalTime heure,
-        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date
+        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
+        @RequestParam(required = false) String type
     ) {
         LocalDate datePointage = date != null ? date : LocalDate.now();
         return ResponseEntity.ok(pointageService.enregistrerArrivee(utilisateurId, heure, datePointage));
