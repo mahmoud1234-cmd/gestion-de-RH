@@ -28,7 +28,13 @@ public class PointageController {
         @RequestParam(required = false) String type
     ) {
         LocalDate datePointage = date != null ? date : LocalDate.now();
-        return ResponseEntity.ok(pointageService.enregistrerArrivee(utilisateurId, heure, datePointage));
+        TypePresence typePresence = TypePresence.PRESENTIEL;
+        if (type != null && !type.isBlank()) {
+            try {
+                typePresence = TypePresence.valueOf(type);
+            } catch (IllegalArgumentException ignored) {}
+        }
+        return ResponseEntity.ok(pointageService.enregistrerArrivee(utilisateurId, heure, datePointage, typePresence));
     }
 
     @PutMapping("/depart/{utilisateurId}")

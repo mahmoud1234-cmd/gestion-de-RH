@@ -42,7 +42,7 @@ public class PointageService {
     }
     // ✅ AJOUTER CETTE MÉTHODE DANS PointageService.java
 
-public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, LocalDate date) {
+public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, LocalDate date, TypePresence type) {
     Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
         .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
@@ -56,34 +56,19 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
     pointage.setUtilisateur(utilisateur);
     pointage.setDatePointage(date);
     pointage.setHeureArrivee(heure != null ? heure : LocalTime.now());
-    pointage.setType(TypePresence.PRESENTIEL);
+    pointage.setType(type != null ? type : TypePresence.PRESENTIEL);
     pointage.setPresent(true);
 
     Pointage saved = pointageRepository.save(pointage);
     return convertToDTO(saved);
 }
 
+public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, LocalDate date) {
+    return enregistrerArrivee(utilisateurId, heure, date, TypePresence.PRESENTIEL);
+}
+
     public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure) {
-        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
-            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-
-        LocalDate aujourdhui = LocalDate.now();
-        
-        // Vérifier si déjà pointé aujourd'hui
-        var existing = pointageRepository.findByUtilisateurIdAndDate(utilisateurId, aujourdhui);
-        if (existing.isPresent()) {
-            throw new RuntimeException("Vous avez déjà pointé aujourd'hui");
-        }
-
-        Pointage pointage = new Pointage();
-        pointage.setUtilisateur(utilisateur);
-        pointage.setDatePointage(aujourdhui);
-        pointage.setHeureArrivee(heure != null ? heure : LocalTime.now());
-        pointage.setType(TypePresence.PRESENTIEL);
-        pointage.setPresent(true);
-
-        Pointage saved = pointageRepository.save(pointage);
-        return convertToDTO(saved);
+        return enregistrerArrivee(utilisateurId, heure, LocalDate.now(), TypePresence.PRESENTIEL);
     }
 
     public PointageDTO enregistrerDepart(Long utilisateurId, LocalTime heure) {
@@ -175,7 +160,7 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
         );
         
         return pointages.stream()
-            .mapToDouble(Pointage::getHeuresTravaillees)
+            .mapToDouble(p -> p.getHeuresTravaillees() != null ? p.getHeuresTravaillees() : 0.0)
             .sum();
     }
 }
