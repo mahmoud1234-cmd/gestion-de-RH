@@ -114,7 +114,7 @@ import { CongeService } from '../../services/conge.service';
                 routerLink="/salaire"
                 routerLinkActive="active"
               >
-                <i class="fas fa-euro-sign me-1"></i> Salaire
+                <i class="fas fa-coins me-1"></i> Salaire
               </a>
             </li>
 

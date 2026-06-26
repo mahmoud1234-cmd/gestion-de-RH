@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -15,13 +15,13 @@ import { ToastrService } from 'ngx-toastr';
       <!-- Titre -->
       <div class="page-header mb-4">
         <h2>
-          <i class="fas fa-euro-sign me-2 text-primary"></i>
+          <i class="fas fa-coins me-2 text-primary"></i>
           Gestion des Salaires
         </h2>
         <p class="text-muted">Calculez et consultez vos fiches de paie</p>
       </div>
 
-      <!-- Sélecteur de période -->
+      <!-- SÃ©lecteur de pÃ©riode -->
       <div class="card mb-4">
         <div class="card-body">
           <div class="row align-items-end">
@@ -38,7 +38,7 @@ import { ToastrService } from 'ngx-toastr';
               </select>
             </div>
             <div class="col-md-3">
-              <label class="form-label fw-semibold">Année</label>
+              <label class="form-label fw-semibold">AnnÃ©e</label>
               <select
                 class="form-select"
                 [(ngModel)]="annee"
@@ -75,12 +75,12 @@ import { ToastrService } from 'ngx-toastr';
         id="pay-slip-container"
         class="pay-slip animate__animated animate__fadeInUp"
       >
-        <!-- En-tête -->
+        <!-- En-tÃªte -->
         <div class="pay-slip-header">
           <div class="company-info">
-            <h3>🏢 RH Gestion</h3>
+            <h3>ðŸ¢ RH Gestion</h3>
             <p>SIRET : 123 456 789 00010</p>
-            <p>📞 +33 1 23 45 67 89</p>
+            <p>ðŸ“ž +33 1 23 45 67 89</p>
           </div>
           <div class="pay-slip-title">
             <h2>FICHE DE PAIE</h2>
@@ -92,20 +92,20 @@ import { ToastrService } from 'ngx-toastr';
                 'bg-warning': !salaire.estPaye,
               }"
             >
-              {{ salaire.estPaye ? '✅ Payé' : '⏳ En attente' }}
+              {{ salaire.estPaye ? 'âœ… PayÃ©' : 'â³ En attente' }}
             </span>
           </div>
         </div>
 
-        <!-- Info employé -->
+        <!-- Info employÃ© -->
         <div class="pay-slip-employee">
           <div class="row">
             <div class="col-md-6">
               <p>
-                <strong>Employé :</strong> {{ salaire.utilisateurPrenom }}
+                <strong>EmployÃ© :</strong> {{ salaire.utilisateurPrenom }}
                 {{ salaire.utilisateurNom }}
               </p>
-              <p><strong>Rôle :</strong> {{ salaire.utilisateurRole }}</p>
+              <p><strong>RÃ´le :</strong> {{ salaire.utilisateurRole }}</p>
             </div>
             <div class="col-md-6 text-md-end">
               <p>
@@ -121,16 +121,16 @@ import { ToastrService } from 'ngx-toastr';
                     'bg-warning': !salaire.estPaye,
                   }"
                 >
-                  {{ salaire.estPaye ? 'Payé' : 'En attente' }}
+                  {{ salaire.estPaye ? 'PayÃ©' : 'En attente' }}
                 </span>
               </p>
             </div>
           </div>
         </div>
 
-        <!-- Détail des heures -->
+        <!-- DÃ©tail des heures -->
         <div class="pay-slip-section">
-          <h5>📊 Détail des heures</h5>
+          <h5>ðŸ“Š DÃ©tail des heures</h5>
           <div class="row">
             <div class="col-md-6">
               <table class="table table-sm table-bordered">
@@ -140,22 +140,22 @@ import { ToastrService } from 'ngx-toastr';
                     {{ salaire.heuresNormales | number: '1.1-1' }} h
                   </td>
                   <td class="text-end">
-                    {{ salaire.tauxHoraire | currency: 'EUR' }}/h
+                    {{ salaire.tauxHoraire | currency: 'TND' : '1.3-3' }}/h
                   </td>
                   <td class="text-end fw-bold">
-                    {{ salaire.salaireBase | currency: 'EUR' }}
+                    {{ salaire.salaireBase | currency: 'TND' : '1.3-3' }}
                   </td>
                 </tr>
                 <tr>
-                  <td>Heures supplémentaires</td>
+                  <td>Heures supplÃ©mentaires</td>
                   <td class="text-end">
                     {{ salaire.heuresSupplementaires | number: '1.1-1' }} h
                   </td>
                   <td class="text-end">
-                    {{ salaire.tauxHoraireSupp | currency: 'EUR' }}/h
+                    {{ salaire.tauxHoraireSupp | currency: 'TND' : '1.3-3' }}/h
                   </td>
                   <td class="text-end fw-bold">
-                    {{ salaire.salaireSupplementaire | currency: 'EUR' }}
+                    {{ salaire.salaireSupplementaire | currency: 'TND' : '1.3-3' }}
                   </td>
                 </tr>
                 <tr>
@@ -164,10 +164,10 @@ import { ToastrService } from 'ngx-toastr';
                     {{ salaire.heuresDimanche | number: '1.1-1' }} h
                   </td>
                   <td class="text-end">
-                    {{ salaire.tauxHoraireDimanche | currency: 'EUR' }}/h
+                    {{ salaire.tauxHoraireDimanche | currency: 'TND' : '1.3-3' }}/h
                   </td>
                   <td class="text-end fw-bold">
-                    {{ salaire.salaireDimanche | currency: 'EUR' }}
+                    {{ salaire.salaireDimanche | currency: 'TND' : '1.3-3' }}
                   </td>
                 </tr>
               </table>
@@ -195,24 +195,24 @@ import { ToastrService } from 'ngx-toastr';
             salaire.primePerformance
           "
         >
-          <h5>🎯 Primes</h5>
+          <h5>ðŸŽ¯ Primes</h5>
           <table class="table table-sm table-bordered">
             <tr *ngIf="salaire.primeAnciennete">
-              <td>Prime ancienneté</td>
+              <td>Prime anciennetÃ©</td>
               <td class="text-end fw-bold text-success">
-                {{ salaire.primeAnciennete | currency: 'EUR' }}
+                {{ salaire.primeAnciennete | currency: 'TND' : '1.3-3' }}
               </td>
             </tr>
             <tr *ngIf="salaire.primeResponsabilite">
-              <td>Prime responsabilité</td>
+              <td>Prime responsabilitÃ©</td>
               <td class="text-end fw-bold text-success">
-                {{ salaire.primeResponsabilite | currency: 'EUR' }}
+                {{ salaire.primeResponsabilite | currency: 'TND' : '1.3-3' }}
               </td>
             </tr>
             <tr *ngIf="salaire.primePerformance">
               <td>Prime performance</td>
               <td class="text-end fw-bold text-success">
-                {{ salaire.primePerformance | currency: 'EUR' }}
+                {{ salaire.primePerformance | currency: 'TND' : '1.3-3' }}
               </td>
             </tr>
           </table>
@@ -220,12 +220,12 @@ import { ToastrService } from 'ngx-toastr';
 
         <!-- Lignes de salaire -->
         <div class="pay-slip-section">
-          <h5>📝 Détail des gains et déductions</h5>
+          <h5>ðŸ“ DÃ©tail des gains et dÃ©ductions</h5>
           <div class="table-responsive">
             <table class="table table-sm table-bordered">
               <thead class="table-light">
                 <tr>
-                  <th>Libellé</th>
+                  <th>LibellÃ©</th>
                   <th>Type</th>
                   <th class="text-end">Montant</th>
                 </tr>
@@ -259,7 +259,7 @@ import { ToastrService } from 'ngx-toastr';
                       'text-danger': ligne.montant < 0,
                     }"
                   >
-                    {{ ligne.montant | currency: 'EUR' }}
+                    {{ ligne.montant | currency: 'TND' : '1.3-3' }}
                   </td>
                 </tr>
               </tbody>
@@ -267,25 +267,25 @@ import { ToastrService } from 'ngx-toastr';
           </div>
         </div>
 
-        <!-- Récapitulatif -->
+        <!-- RÃ©capitulatif -->
         <div class="pay-slip-total">
           <div class="row">
             <div class="col-md-4">
               <div class="total-box">
                 <label>SALAIRE BRUT</label>
                 <h3 class="text-primary">
-                  {{ salaire.salaireBrut | currency: 'EUR' }}
+                  {{ salaire.salaireBrut | currency: 'TND' : '1.3-3' }}
                 </h3>
               </div>
             </div>
             <div class="col-md-4">
               <div class="total-box">
-                <label>COTISATIONS + IMPÔTS</label>
+                <label>COTISATIONS + IMPÃ”TS</label>
                 <h3 class="text-danger">
                   -
                   {{
                     salaire.cotisationsSociales + salaire.impots
-                      | currency: 'EUR'
+                      | currency: 'TND' : '1.3-3'
                   }}
                 </h3>
               </div>
@@ -294,7 +294,7 @@ import { ToastrService } from 'ngx-toastr';
               <div class="total-box total-net">
                 <label>SALAIRE NET</label>
                 <h3 class="text-success">
-                  {{ salaire.salaireNet | currency: 'EUR' }}
+                  {{ salaire.salaireNet | currency: 'TND' : '1.3-3' }}
                 </h3>
               </div>
             </div>
@@ -304,8 +304,8 @@ import { ToastrService } from 'ngx-toastr';
         <!-- Pied de page -->
         <div class="pay-slip-footer">
           <p class="text-muted text-center small">
-            Fiche de paie générée automatiquement le
-            {{ salaire.dateCalcul | date: 'dd/MM/yyyy à HH:mm' }}
+            Fiche de paie gÃ©nÃ©rÃ©e automatiquement le
+            {{ salaire.dateCalcul | date: 'dd/MM/yyyy Ã  HH:mm' }}
           </p>
         </div>
       </div>
@@ -313,9 +313,9 @@ import { ToastrService } from 'ngx-toastr';
       <!-- Pas de salaire -->
       <div *ngIf="!salaire && !loading" class="text-center py-5">
         <i class="fas fa-file-invoice fa-4x text-muted mb-3"></i>
-        <h4>Aucune fiche de paie trouvée</h4>
+        <h4>Aucune fiche de paie trouvÃ©e</h4>
         <p class="text-muted">
-          Cliquez sur "Calculer le salaire" pour générer votre fiche de paie
+          Cliquez sur "Calculer le salaire" pour gÃ©nÃ©rer votre fiche de paie
         </p>
       </div>
     </div>
@@ -481,17 +481,17 @@ export class SalaireComponent implements OnInit {
 
   moisOptions = [
     { value: 1, label: 'Janvier' },
-    { value: 2, label: 'Février' },
+    { value: 2, label: 'FÃ©vrier' },
     { value: 3, label: 'Mars' },
     { value: 4, label: 'Avril' },
     { value: 5, label: 'Mai' },
     { value: 6, label: 'Juin' },
     { value: 7, label: 'Juillet' },
-    { value: 8, label: 'Août' },
+    { value: 8, label: 'AoÃ»t' },
     { value: 9, label: 'Septembre' },
     { value: 10, label: 'Octobre' },
     { value: 11, label: 'Novembre' },
-    { value: 12, label: 'Décembre' },
+    { value: 12, label: 'DÃ©cembre' },
   ];
 
   anneesOptions: number[] = [];
@@ -522,6 +522,10 @@ export class SalaireComponent implements OnInit {
     return this.moisOptions.find((m) => m.value === this.mois)?.label || '';
   }
 
+  private formatTnd(montant: number): string {
+    return `${montant.toFixed(3)} TND`;
+  }
+
   chargerSalaire() {
     if (!this.user) return;
     this.loading = true;
@@ -550,28 +554,28 @@ export class SalaireComponent implements OnInit {
         next: (data) => {
           this.salaire = data;
           this.loading = false;
-          this.toastr.success('Fiche de paie générée avec succès', '✅ Succès');
+          this.toastr.success('Fiche de paie gÃ©nÃ©rÃ©e avec succÃ¨s', 'âœ… SuccÃ¨s');
         },
         error: (err) => {
           this.loading = false;
-          this.toastr.error(err.error || 'Erreur lors du calcul', '❌ Erreur');
+          this.toastr.error(err.error || 'Erreur lors du calcul', 'âŒ Erreur');
         },
       });
   }
 
-  // ✅ Export PDF fonctionnel - Version impression
+  // âœ… Export PDF fonctionnel - Version impression
   exporterPDF() {
     if (!this.salaire) {
-      this.toastr.warning('Aucune fiche de paie à exporter', '⚠️ Attention');
+      this.toastr.warning('Aucune fiche de paie Ã  exporter', 'âš ï¸ Attention');
       return;
     }
 
-    // ✅ Ouvrir une nouvelle fenêtre avec la fiche de paie formatée
+    // âœ… Ouvrir une nouvelle fenÃªtre avec la fiche de paie formatÃ©e
     const printWindow = window.open('', '_blank', 'width=1000,height=800');
     if (!printWindow) {
       this.toastr.error(
         'Veuillez autoriser les pop-ups pour exporter le PDF',
-        '❌ Erreur',
+        'âŒ Erreur',
       );
       return;
     }
@@ -596,7 +600,7 @@ export class SalaireComponent implements OnInit {
                     </span>
                 </td>
                 <td style="text-align:right;font-weight:${l.montant > 0 ? 'bold' : 'normal'};color:${l.montant > 0 ? '#28a745' : '#dc3545'}">
-                    ${l.montant.toFixed(2)} €
+                    ${this.formatTnd(l.montant)}
                 </td>
             </tr>
         `,
@@ -744,50 +748,50 @@ export class SalaireComponent implements OnInit {
                 <!-- Header -->
                 <div class="header">
                     <div>
-                        <h2>🏢 RH Gestion</h2>
+                        <h2>ðŸ¢ RH Gestion</h2>
                         <p>SIRET : 123 456 789 00010</p>
-                        <p>📞 +33 1 23 45 67 89</p>
+                        <p>ðŸ“ž +33 1 23 45 67 89</p>
                     </div>
                     <div class="header-right">
                         <h2>FICHE DE PAIE</h2>
                         <p>${this.getNomMois()} ${this.annee}</p>
-                        <span class="badge">${this.salaire.estPaye ? '✅ Payé' : '⏳ En attente'}</span>
+                        <span class="badge">${this.salaire.estPaye ? 'âœ… PayÃ©' : 'â³ En attente'}</span>
                     </div>
                 </div>
 
                 <!-- Employee Info -->
                 <div class="employee-info">
                     <div>
-                        <p><strong>Employé :</strong> ${this.salaire.utilisateurPrenom} ${this.salaire.utilisateurNom}</p>
-                        <p><strong>Rôle :</strong> ${this.salaire.utilisateurRole}</p>
+                        <p><strong>EmployÃ© :</strong> ${this.salaire.utilisateurPrenom} ${this.salaire.utilisateurNom}</p>
+                        <p><strong>RÃ´le :</strong> ${this.salaire.utilisateurRole}</p>
                     </div>
                     <div style="text-align:right;">
                         <p><strong>Date de calcul :</strong> ${new Date(this.salaire.dateCalcul).toLocaleDateString('fr-FR')}</p>
-                        <p><strong>Statut :</strong> ${this.salaire.estPaye ? 'Payé' : 'En attente'}</p>
+                        <p><strong>Statut :</strong> ${this.salaire.estPaye ? 'PayÃ©' : 'En attente'}</p>
                     </div>
                 </div>
 
                 <!-- Heures -->
                 <div class="section">
-                    <div class="section-title">📊 Détail des heures</div>
+                    <div class="section-title">ðŸ“Š DÃ©tail des heures</div>
                     <table class="table table-bordered">
                         <tr>
                             <td><strong>Heures normales</strong></td>
                             <td class="text-end">${this.salaire.heuresNormales} h</td>
-                            <td class="text-end">${this.salaire.tauxHoraire} €/h</td>
-                            <td class="text-end fw-bold">${this.salaire.salaireBase.toFixed(2)} €</td>
+                            <td class="text-end">${this.formatTnd(this.salaire.tauxHoraire)}/h</td>
+                            <td class="text-end fw-bold">${this.formatTnd(this.salaire.salaireBase)}</td>
                         </tr>
                         <tr>
-                            <td><strong>Heures supplémentaires</strong></td>
+                            <td><strong>Heures supplÃ©mentaires</strong></td>
                             <td class="text-end">${this.salaire.heuresSupplementaires} h</td>
-                            <td class="text-end">${this.salaire.tauxHoraireSupp} €/h</td>
-                            <td class="text-end fw-bold">${this.salaire.salaireSupplementaire.toFixed(2)} €</td>
+                            <td class="text-end">${this.formatTnd(this.salaire.tauxHoraireSupp)}/h</td>
+                            <td class="text-end fw-bold">${this.formatTnd(this.salaire.salaireSupplementaire)}</td>
                         </tr>
                         <tr>
                             <td><strong>Heures dimanche</strong></td>
                             <td class="text-end">${this.salaire.heuresDimanche} h</td>
-                            <td class="text-end">${this.salaire.tauxHoraireDimanche} €/h</td>
-                            <td class="text-end fw-bold">${this.salaire.salaireDimanche.toFixed(2)} €</td>
+                            <td class="text-end">${this.formatTnd(this.salaire.tauxHoraireDimanche)}/h</td>
+                            <td class="text-end fw-bold">${this.formatTnd(this.salaire.salaireDimanche)}</td>
                         </tr>
                         <tr>
                             <td><strong>Heures d'absence</strong></td>
@@ -800,20 +804,20 @@ export class SalaireComponent implements OnInit {
 
                 <!-- Primes -->
                 <div class="section" style="${this.salaire.primeAnciennete || this.salaire.primeResponsabilite || this.salaire.primePerformance ? '' : 'display:none;'}">
-                    <div class="section-title">🎯 Primes</div>
+                    <div class="section-title">ðŸŽ¯ Primes</div>
                     <table class="table table-bordered">
-                        ${this.salaire.primeAnciennete > 0 ? `<tr><td>Prime ancienneté</td><td class="text-end fw-bold text-success">${this.salaire.primeAnciennete.toFixed(2)} €</td></tr>` : ''}
-                        ${this.salaire.primeResponsabilite > 0 ? `<tr><td>Prime responsabilité</td><td class="text-end fw-bold text-success">${this.salaire.primeResponsabilite.toFixed(2)} €</td></tr>` : ''}
-                        ${this.salaire.primePerformance > 0 ? `<tr><td>Prime performance</td><td class="text-end fw-bold text-success">${this.salaire.primePerformance.toFixed(2)} €</td></tr>` : ''}
+                        ${this.salaire.primeAnciennete > 0 ? `<tr><td>Prime anciennetÃ©</td><td class="text-end fw-bold text-success">${this.formatTnd(this.salaire.primeAnciennete)}</td></tr>` : ''}
+                        ${this.salaire.primeResponsabilite > 0 ? `<tr><td>Prime responsabilitÃ©</td><td class="text-end fw-bold text-success">${this.formatTnd(this.salaire.primeResponsabilite)}</td></tr>` : ''}
+                        ${this.salaire.primePerformance > 0 ? `<tr><td>Prime performance</td><td class="text-end fw-bold text-success">${this.formatTnd(this.salaire.primePerformance)}</td></tr>` : ''}
                     </table>
                 </div>
 
-                <!-- Lignes détaillées -->
+                <!-- Lignes dÃ©taillÃ©es -->
                 <div class="section">
-                    <div class="section-title">📝 Détail des gains et déductions</div>
+                    <div class="section-title">ðŸ“ DÃ©tail des gains et dÃ©ductions</div>
                     <table class="table table-bordered">
                         <thead>
-                            <tr><th>Libellé</th><th>Type</th><th style="text-align:right;">Montant</th></tr>
+                            <tr><th>LibellÃ©</th><th>Type</th><th style="text-align:right;">Montant</th></tr>
                         </thead>
                         <tbody>
                             ${lignesHTML}
@@ -823,24 +827,24 @@ export class SalaireComponent implements OnInit {
 
                 <!-- Total -->
                 <div class="section">
-                    <div class="section-title">💰 Récapitulatif</div>
+                    <div class="section-title">ðŸ’° RÃ©capitulatif</div>
                     <div class="row">
                         <div class="col-4">
                             <div class="total-box">
                                 <label>SALAIRE BRUT</label>
-                                <h3 class="text-primary">${this.salaire.salaireBrut.toFixed(2)} €</h3>
+                                <h3 class="text-primary">${this.formatTnd(this.salaire.salaireBrut)}</h3>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="total-box">
-                                <label>COTISATIONS + IMPÔTS</label>
-                                <h3 class="text-danger">- ${(this.salaire.cotisationsSociales + this.salaire.impots).toFixed(2)} €</h3>
+                                <label>COTISATIONS + IMPÃ”TS</label>
+                                <h3 class="text-danger">- ${this.formatTnd(this.salaire.cotisationsSociales + this.salaire.impots)}</h3>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="total-net">
                                 <label>SALAIRE NET</label>
-                                <h2>${this.salaire.salaireNet.toFixed(2)} €</h2>
+                                <h2>${this.formatTnd(this.salaire.salaireNet)}</h2>
                             </div>
                         </div>
                     </div>
@@ -848,11 +852,11 @@ export class SalaireComponent implements OnInit {
 
                 <!-- Footer -->
                 <div class="footer">
-                    Fiche de paie générée automatiquement le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}
+                    Fiche de paie gÃ©nÃ©rÃ©e automatiquement le ${new Date().toLocaleDateString('fr-FR')} Ã  ${new Date().toLocaleTimeString('fr-FR')}
                 </div>
             </div>
             <script>
-                // Auto-print après chargement
+                // Auto-print aprÃ¨s chargement
                 window.onload = function() {
                     setTimeout(function() {
                         window.print();
@@ -866,8 +870,8 @@ export class SalaireComponent implements OnInit {
     printWindow.document.write(html);
     printWindow.document.close();
     this.toastr.success(
-      'Fiche de paie ouverte dans une nouvelle fenêtre',
-      '✅ Succès',
+      'Fiche de paie ouverte dans une nouvelle fenÃªtre',
+      'âœ… SuccÃ¨s',
     );
   }
 
@@ -876,3 +880,4 @@ export class SalaireComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+
