@@ -4,6 +4,7 @@ import com.rh.conge.dto.SalaireDTO;
 import com.rh.conge.dto.LigneSalaireDTO;
 import com.rh.conge.entity.*;
 import com.rh.conge.repository.*;
+import com.rh.conge.util.PointageRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,11 +121,11 @@ public class SalaireService {
         LocalDate debutMois = yearMonth.atDay(1);
         LocalDate finMois = yearMonth.atEndOfMonth();
 
-        List<Pointage> pointages = pointageRepository.findByUtilisateurAndDatePointageBetween(
-            utilisateur, debutMois, finMois
+        List<Object[]> pointageRows = pointageRepository.findPointageRowsByUtilisateurIdAndPeriod(
+            utilisateurId, debutMois, finMois
         );
 
-        HeuresCalculees heures = calculerHeures(pointages);
+        HeuresCalculees heures = calculerHeures(pointageRows);
 
         double tauxHoraire = (utilisateur.getRole() == Role.MANAGER) 
             ? TAUX_HORAIRE_MANAGER 
@@ -212,36 +213,41 @@ public class SalaireService {
 
     // ========== MÉTHODES PRIVÉES ==========
 
-    private HeuresCalculees calculerHeures(List<Pointage> pointages) {
+    private HeuresCalculees calculerHeures(List<Object[]> pointageRows) {
         double normales = 0.0;
         double supplementaires = 0.0;
         double dimanche = 0.0;
         double absences = 0.0;
 
-        for (Pointage p : pointages) {
-            if (p.getHeuresTravaillees() == null || p.getHeuresTravaillees() == 0) {
+        for (Object[] row : pointageRows) {
+            Double heuresTravaillees = PointageRowMapper.asDouble(row[10]);
+            if (heuresTravaillees == null || heuresTravaillees == 0) {
                 absences += 7.0;
                 continue;
             }
 
-            LocalDate date = p.getDatePointage();
+            LocalDate date = PointageRowMapper.asLocalDate(row[4]);
+            if (date == null) {
+                continue;
+            }
+
             boolean estDimanche = date.getDayOfWeek() == DayOfWeek.SUNDAY;
 
             double heuresJour = 7.0;
-            double heuresRestantes = p.getHeuresTravaillees() - heuresJour;
+            double heuresRestantes = heuresTravaillees - heuresJour;
 
             if (heuresRestantes > 0) {
                 if (estDimanche) {
-                    dimanche += p.getHeuresTravaillees();
+                    dimanche += heuresTravaillees;
                 } else {
                     normales += heuresJour;
                     supplementaires += heuresRestantes;
                 }
             } else {
                 if (estDimanche) {
-                    dimanche += p.getHeuresTravaillees();
+                    dimanche += heuresTravaillees;
                 } else {
-                    normales += p.getHeuresTravaillees();
+                    normales += heuresTravaillees;
                 }
             }
         }

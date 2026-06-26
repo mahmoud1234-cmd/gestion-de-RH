@@ -6,6 +6,7 @@ import com.rh.conge.entity.Utilisateur;
 import com.rh.conge.entity.TypePresence;
 import com.rh.conge.repository.PointageRepository;
 import com.rh.conge.repository.UtilisateurRepository;
+import com.rh.conge.util.PointageRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ public class PointageService {
         dto.setDatePointage(pointage.getDatePointage());
         dto.setHeureArrivee(pointage.getHeureArrivee());
         dto.setHeureDepart(pointage.getHeureDepart());
-        dto.setType(pointage.getType());
+        dto.setType(PointageRowMapper.resolveType(pointage.getType()));
         dto.setJustification(pointage.getJustification());
         dto.setPresent(pointage.isPresent());
         dto.setHeuresTravaillees(pointage.getHeuresTravaillees());
@@ -41,43 +42,41 @@ public class PointageService {
         dto.setEstJustifie(pointage.isEstJustifie());
         return dto;
     }
-    // ✅ AJOUTER CETTE MÉTHODE DANS PointageService.java
 
-public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, LocalDate date, TypePresence type) {
-    Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
-        .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, LocalDate date, TypePresence type) {
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-    // Vérifier si déjà pointé ce jour-là
-    var existing = pointageRepository.findByUtilisateurIdAndDate(utilisateurId, date);
-    if (existing.isPresent()) {
-        throw new RuntimeException("Vous avez déjà pointé le " + date);
+        var existing = pointageRepository.findByUtilisateurIdAndDate(utilisateurId, date);
+        if (existing.isPresent()) {
+            throw new RuntimeException("Vous avez déjà pointé le " + date);
+        }
+
+        Pointage pointage = new Pointage();
+        pointage.setUtilisateur(utilisateur);
+        pointage.setDatePointage(date);
+        pointage.setHeureArrivee(heure != null ? heure : LocalTime.now());
+        pointage.setType(type != null ? type.name() : TypePresence.PRESENTIEL.name());
+        pointage.setPresent(true);
+
+        Pointage saved = pointageRepository.save(pointage);
+        return convertToDTO(saved);
     }
 
-    Pointage pointage = new Pointage();
-    pointage.setUtilisateur(utilisateur);
-    pointage.setDatePointage(date);
-    pointage.setHeureArrivee(heure != null ? heure : LocalTime.now());
-    pointage.setType(type != null ? type : TypePresence.PRESENTIEL);
-    pointage.setPresent(true);
-
-    Pointage saved = pointageRepository.save(pointage);
-    return convertToDTO(saved);
-}
-
-public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, LocalDate date) {
-    return enregistrerArrivee(utilisateurId, heure, date, TypePresence.PRESENTIEL);
-}
+    public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, LocalDate date) {
+        return enregistrerArrivee(utilisateurId, heure, date, TypePresence.PRESENTIEL);
+    }
 
     public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure) {
         return enregistrerArrivee(utilisateurId, heure, LocalDate.now(), TypePresence.PRESENTIEL);
     }
 
     public PointageDTO enregistrerDepart(Long utilisateurId, LocalTime heure) {
-        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+        utilisateurRepository.findById(utilisateurId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         LocalDate aujourdhui = LocalDate.now();
-        
+
         Pointage pointage = pointageRepository
             .findByUtilisateurIdAndDate(utilisateurId, aujourdhui)
             .orElseThrow(() -> new RuntimeException("Aucun pointage trouvé pour aujourd'hui"));
@@ -88,16 +87,14 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
 
         LocalTime heureDepart = heure != null ? heure : LocalTime.now();
         pointage.setHeureDepart(heureDepart);
-        
-        // Calculer les heures travaillées
+
         Duration duration = Duration.between(
-            pointage.getHeureArrivee(), 
+            pointage.getHeureArrivee(),
             heureDepart
         );
         double heures = duration.toMinutes() / 60.0;
         pointage.setHeuresTravaillees(heures);
-        
-        // Calculer les heures supplémentaires (> 8h)
+
         if (heures > 8) {
             pointage.setHeuresSupplementaires(heures - 8);
         }
@@ -106,49 +103,51 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
         return convertToDTO(saved);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<PointageDTO> getPointagesByUser(Long utilisateurId) {
-        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+        utilisateurRepository.findById(utilisateurId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        
-        return pointageRepository.findByUtilisateur(utilisateur)
+
+        pointageRepository.repairInvalidTypesForUser(utilisateurId);
+
+        return pointageRepository.findPointageRowsByUtilisateurId(utilisateurId)
             .stream()
-            .map(this::convertToDTO)
+            .map(PointageRowMapper::toDtoWithUser)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<PointageDTO> getPointagesByUserAndDateRange(
-        Long utilisateurId, 
-        LocalDate debut, 
+        Long utilisateurId,
+        LocalDate debut,
         LocalDate fin
     ) {
-        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+        utilisateurRepository.findById(utilisateurId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        
-        return pointageRepository.findByUtilisateurAndDatePointageBetween(utilisateur, debut, fin)
+
+        return pointageRepository.findPointageRowsByUtilisateurIdAndPeriod(utilisateurId, debut, fin)
             .stream()
-            .map(this::convertToDTO)
+            .map(PointageRowMapper::toDtoWithUser)
             .collect(Collectors.toList());
     }
 
     public PointageDTO updateTypePresence(Long pointageId, TypePresence type, String justification) {
         Pointage pointage = pointageRepository.findById(pointageId)
             .orElseThrow(() -> new RuntimeException("Pointage non trouvé"));
-        
-        pointage.setType(type);
+
+        pointage.setType(type.name());
         pointage.setJustification(justification);
         pointage.setEstJustifie(true);
-        
+
         Pointage saved = pointageRepository.save(pointage);
         return convertToDTO(saved);
     }
 
     @Transactional(readOnly = true)
     public List<PointageDTO> getPointagesByDate(LocalDate date) {
-        return pointageRepository.findByDatePointage(date)
+        return pointageRepository.findPointageRowsByDate(date)
             .stream()
-            .map(this::convertToDTO)
+            .map(PointageRowMapper::toDtoWithUser)
             .collect(Collectors.toList());
     }
 
@@ -156,16 +155,20 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
     public double getHeuresTravailleesMois(Long utilisateurId, int mois, int annee) {
         LocalDate debut = LocalDate.of(annee, mois, 1);
         LocalDate fin = debut.withDayOfMonth(debut.lengthOfMonth());
-        
-        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+
+        utilisateurRepository.findById(utilisateurId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-        
-        List<Pointage> pointages = pointageRepository.findByUtilisateurAndDatePointageBetween(
-            utilisateur, debut, fin
-        );
-        
-        return pointages.stream()
-            .mapToDouble(p -> p.getHeuresTravaillees() != null ? p.getHeuresTravaillees() : 0.0)
+
+        return pointageRepository.findPointageRowsByUtilisateurIdAndPeriod(utilisateurId, debut, fin)
+            .stream()
+            .mapToDouble(row -> PointageRowMapper.asDouble(row[10]))
             .sum();
+    }
+
+    @Transactional
+    public int repairPointagesForUser(Long utilisateurId) {
+        utilisateurRepository.findById(utilisateurId)
+            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        return pointageRepository.repairInvalidTypesForUser(utilisateurId);
     }
 }

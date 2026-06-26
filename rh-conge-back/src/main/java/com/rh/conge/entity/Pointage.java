@@ -32,8 +32,8 @@ public class Pointage {
     @Column(name = "heure_depart")
     private LocalTime heureDepart;
     
-    @Convert(converter = TypePresenceConverter.class)
-    private TypePresence type; // PRESENTIEL, TELE_TRAVAIL, CONGE, ABSENCE, FORMATION
+    @Column(name = "type")
+    private String type = TypePresence.PRESENTIEL.name();
     
     private String justification;
     
