@@ -79,7 +79,11 @@ public class SalaireService {
         dto.setCotisationsSociales(salaire.getCotisationsSociales());
         dto.setImpots(salaire.getImpots());
         dto.setSalaireNet(salaire.getSalaireNet());
-        dto.setDateCalcul(salaire.getDateCalcul().toLocalDate());
+        dto.setDateCalcul(
+            salaire.getDateCalcul() != null
+                ? salaire.getDateCalcul().toLocalDate()
+                : LocalDate.now()
+        );
         dto.setEstPaye(salaire.isEstPaye());
         
         if (salaire.getLignes() != null) {
@@ -185,6 +189,7 @@ public class SalaireService {
     }
 
     // ✅ AJOUTER CES MÉTHODES
+    @Transactional(readOnly = true)
     public List<SalaireDTO> getSalairesByUser(Long utilisateurId) {
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
@@ -195,6 +200,7 @@ public class SalaireService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public SalaireDTO getSalaireByUserAndMonth(Long utilisateurId, Integer mois, Integer annee) {
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));

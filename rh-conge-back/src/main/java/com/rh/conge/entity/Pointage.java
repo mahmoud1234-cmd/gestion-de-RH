@@ -32,7 +32,7 @@ public class Pointage {
     @Column(name = "heure_depart")
     private LocalTime heureDepart;
     
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TypePresenceConverter.class)
     private TypePresence type; // PRESENTIEL, TELE_TRAVAIL, CONGE, ABSENCE, FORMATION
     
     private String justification;

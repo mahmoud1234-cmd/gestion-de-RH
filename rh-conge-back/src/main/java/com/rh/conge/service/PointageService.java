@@ -8,6 +8,7 @@ import com.rh.conge.repository.PointageRepository;
 import com.rh.conge.repository.UtilisateurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -105,6 +106,7 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
         return convertToDTO(saved);
     }
 
+    @Transactional(readOnly = true)
     public List<PointageDTO> getPointagesByUser(Long utilisateurId) {
         Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
             .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
@@ -115,6 +117,7 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<PointageDTO> getPointagesByUserAndDateRange(
         Long utilisateurId, 
         LocalDate debut, 
@@ -141,6 +144,7 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
         return convertToDTO(saved);
     }
 
+    @Transactional(readOnly = true)
     public List<PointageDTO> getPointagesByDate(LocalDate date) {
         return pointageRepository.findByDatePointage(date)
             .stream()
@@ -148,6 +152,7 @@ public PointageDTO enregistrerArrivee(Long utilisateurId, LocalTime heure, Local
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public double getHeuresTravailleesMois(Long utilisateurId, int mois, int annee) {
         LocalDate debut = LocalDate.of(annee, mois, 1);
         LocalDate fin = debut.withDayOfMonth(debut.lengthOfMonth());
