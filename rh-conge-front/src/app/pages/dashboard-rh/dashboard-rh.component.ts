@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserService, User } from '../../services/user.service';
 import { PointageService, Pointage } from '../../services/pointage.service';
-import { SalaireService, Salaire } from '../../services/salaire.service';
+import { SalaireService } from '../../services/salaire.service';
 import { ToastrService } from 'ngx-toastr';
 
 interface UserStats {
@@ -113,7 +113,7 @@ interface UserStats {
                  }"></div>
           </div>
           <div class="stat-card-mini animate__animated animate__fadeInUp" style="animation-delay: 0.8s">
-            <div class="stat-value">{{ currentUserStats.tauxHoraire ? (currentUserStats.tauxHoraire | number: '1.2-2') + ' €/h' : '-' }}</div>
+            <div class="stat-value">{{ currentUserStats.tauxHoraire != null ? (currentUserStats.tauxHoraire | number: '1.2-2') + ' €/h' : '-' }}</div>
             <div class="stat-label">Coût / heure</div>
           </div>
         </div>
@@ -700,31 +700,16 @@ export class DashboardRhComponent implements OnInit {
             next: (pointages) => {
               const stats = this.calculerStats(user, pointages, mois, annee);
 
-              // Récupérer le salaire du mois pour obtenir le taux horaire
-              this.salaireService.getSalaireByMonth(user.id!, mois, annee).subscribe({
-                next: (salaire: Salaire) => {
-                  stats.tauxHoraire = salaire?.tauxHoraire || 0;
-                  this.utilisateurs.push(stats);
+              // Taux horaire fixe selon le rôle — pas d'appel API salaire inutile
+              stats.tauxHoraire = user.role === 'MANAGER' ? 18.50 : 12.50;
+              this.utilisateurs.push(stats);
 
-                  if (this.currentUser && this.currentUser.id === user.id) {
-                    this.currentUserStats = stats;
-                  }
+              if (this.currentUser && this.currentUser.id === user.id) {
+                this.currentUserStats = stats;
+              }
 
-                  this.utilisateursFiltres = [...this.utilisateurs];
-                  this.calculerStatsGlobales();
-                },
-                error: () => {
-                  stats.tauxHoraire = 0;
-                  this.utilisateurs.push(stats);
-
-                  if (this.currentUser && this.currentUser.id === user.id) {
-                    this.currentUserStats = stats;
-                  }
-
-                  this.utilisateursFiltres = [...this.utilisateurs];
-                  this.calculerStatsGlobales();
-                },
-              });
+              this.utilisateursFiltres = [...this.utilisateurs];
+              this.calculerStatsGlobales();
             },
             error: () => {
               const stats = this.calculerStatsVides(user);
